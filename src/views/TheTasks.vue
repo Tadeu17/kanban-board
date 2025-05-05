@@ -6,7 +6,7 @@
       :key="column.status"
       class="tasks-column"
       @dragover.prevent
-      @drop="onDrop(column.status)"
+      @drop="(event) => onDrop(column.status, event)"
       :class="column.status"
     >
       <h2 class="heading-2">{{ column.label }}</h2>
@@ -65,13 +65,12 @@ export default {
   },
   methods: {
     onDragStart(task) {
-      this.draggedTaskId = task.id;
+      this.draggedTaskId = task.title;
     },
     onDrop(newStatus) {
-      const task = this.tasks.find((t) => t.id === this.draggedTaskId);
+      const task = this.tasks.find((t) => t.title === this.draggedTaskId);
       if (task) {
         task.status = newStatus;
-
         const column = this.columns.find((c) => c.status === newStatus);
         this.dialogTasks = this.tasks.filter((t) => t.status === newStatus);
         this.activeColumnLabel = column ? column.label : newStatus;
