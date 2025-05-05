@@ -80,7 +80,14 @@ export default {
     },
     onDrop(newStatus) {
       if (this.draggedTask && this.draggedTask.status !== newStatus) {
-        this.draggedTask.status = newStatus;
+        const taskIndex = this.tasks.findIndex(
+          (t) => t.id === this.draggedTask.id
+        );
+        if (taskIndex !== -1) {
+          const [task] = this.tasks.splice(taskIndex, 1);
+          task.status = newStatus;
+          this.tasks.unshift(task); // 👈 Insert at the top of the array
+        }
         this.draggedTask = null;
       }
     },
