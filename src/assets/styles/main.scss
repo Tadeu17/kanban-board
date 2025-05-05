@@ -1,0 +1,56 @@
+.my-nav {
+  @media (orientation: portrait) {
+    background-color: lightblue;
+  }
+
+  @media (orientation: landscape) {
+    background-color: lightgreen;
+  }
+}
+
+// Variables
+$font-roboto: 'Roboto', sans-serif;
+$letter-spacing: 1%;
+$line-height: 140%;
+$vertical-trim: baseline; // placeholder - real trim would be via alignment
+$uppercase: uppercase;
+
+// Mixin
+@mixin text-style($weight, $size, $spacing, $paragraph, $transform: none) {
+  font-family: $font-roboto;
+  font-weight: $weight;
+  font-size: $size;
+  line-height: $line-height;
+  letter-spacing: $spacing;
+  text-transform: $transform;
+  margin-bottom: $paragraph;
+}
+
+.heading-1 {
+  @include text-style(500, 32px, $letter-spacing, 8px, $uppercase);
+}
+
+.heading-2 {
+  @include text-style(400, 24px, $letter-spacing, 8px, $uppercase);
+}
+
+.nav-labels {
+  @include text-style(300, 20px, $letter-spacing, 12px, $uppercase);
+}
+
+.body {
+  @include text-style(300, 16px, $letter-spacing, 12px, $uppercase);
+}
+
+.portrait-body {
+  @include text-style(300, 14px, $letter-spacing, 12px, $uppercase);
+}
+
+.button-text {
+  @include text-style(500, 16px, $letter-spacing, 12px, $uppercase);
+}
+
+.dialog-text {
+  @include text-style(300, 20px, $letter-spacing, 12px);
+}
+
