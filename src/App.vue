@@ -3,6 +3,10 @@
     <router-link to="/">Home</router-link> |
     <router-link to="/about">About</router-link>
   </nav>
+
+  <div>
+    <TheIcon name="Menu-Lapis" dark />
+  </div>
 </template>
 
 <style lang="scss">
