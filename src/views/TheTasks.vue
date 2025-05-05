@@ -1,32 +1,38 @@
 <template>
   <div class="tasks-container">
     <!-- TO DO Column -->
-    <div class="tasks-column">
+    <div class="tasks-column" @dragover.prevent @drop="onDrop('to-do')">
       <h2 class="heading-2">TO DO</h2>
       <TheTask
-        v-for="task in tasks.filter((task) => task.status === 'to-do')"
+        v-for="task in todoTasks"
         :key="task.id"
         :task="task"
+        draggable="true"
+        @dragstart="onDragStart(task)"
       />
     </div>
 
     <!-- IN PROGRESS Column -->
-    <div class="tasks-column">
+    <div class="tasks-column" @dragover.prevent @drop="onDrop('in-progress')">
       <h2 class="heading-2">IN PROGRESS</h2>
       <TheTask
-        v-for="task in tasks.filter((task) => task.status === 'in-progress')"
+        v-for="task in inProgressTasks"
         :key="task.id"
         :task="task"
+        draggable="true"
+        @dragstart="onDragStart(task)"
       />
     </div>
 
     <!-- DONE Column -->
-    <div class="tasks-column">
+    <div class="tasks-column" @dragover.prevent @drop="onDrop('done')">
       <h2 class="heading-2">DONE</h2>
       <TheTask
-        v-for="task in tasks.filter((task) => task.status === 'done')"
+        v-for="task in doneTasks"
         :key="task.id"
         :task="task"
+        draggable="true"
+        @dragstart="onDragStart(task)"
       />
     </div>
   </div>
@@ -37,30 +43,47 @@ import TheTask from "../components/TheTask.vue";
 
 export default {
   name: "TheTasks",
-  components: {
-    TheTask,
-  },
+  components: { TheTask },
   data() {
     return {
       tasks: [],
+      draggedTask: null,
     };
   },
+  computed: {
+    todoTasks() {
+      return this.tasks.filter((task) => task.status === "to-do");
+    },
+    inProgressTasks() {
+      return this.tasks.filter((task) => task.status === "in-progress");
+    },
+    doneTasks() {
+      return this.tasks.filter((task) => task.status === "done");
+    },
+  },
   mounted() {
-    // Fetch data from the endpoint
     fetch("https://q1z3telex7a9metry.denaliops.com/data.json")
       .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
+        if (!response.ok) throw new Error("Network response was not ok");
         return response.json();
       })
       .then((data) => {
-        this.tasks = data; // Store the fetched data in the tasks variable
-        console.log("Fetched tasks:", this.tasks); // Log the data for debugging
+        this.tasks = data;
       })
       .catch((error) => {
-        console.error("There was a problem with the fetch operation:", error);
+        console.error("Fetch error:", error);
       });
+  },
+  methods: {
+    onDragStart(task) {
+      this.draggedTask = task;
+    },
+    onDrop(newStatus) {
+      if (this.draggedTask && this.draggedTask.status !== newStatus) {
+        this.draggedTask.status = newStatus;
+        this.draggedTask = null;
+      }
+    },
   },
 };
 </script>
@@ -68,13 +91,15 @@ export default {
 <style lang="scss" scoped>
 .heading-2 {
   text-align: left;
+  font-weight: bold;
+  font-size: 18px;
+  margin-bottom: 12px;
 }
 
 .tasks-container {
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  flex-wrap: wrap;
   gap: 16px;
   padding: 36px;
 
@@ -94,9 +119,6 @@ export default {
   border-radius: 4px;
   padding: 16px;
   background-color: #f9f9f9;
-
-  @media (orientation: landscape) {
-    flex-direction: column;
-  }
+  min-height: 300px;
 }
 </style>
