@@ -1,13 +1,14 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
+  <TheNavigation />
 
   <div>
     <TheIcon name="Menu-Lapis" dark />
   </div>
 </template>
+
+<script setup>  
+import TheNavigation from './components/TheNavigation.vue';
+</script>
 
 <style lang="scss">
 #app {
