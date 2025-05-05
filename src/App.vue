@@ -53,6 +53,7 @@ $navigation-width-open: 240px;
 }
 
 .main-content {
+  height: 100vh;
   margin-left: $navigation-width-closed;
   transition: margin-left 0.3s ease;
 

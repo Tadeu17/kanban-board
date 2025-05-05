@@ -33,13 +33,6 @@ $line-height: 140%;
 $vertical-trim: baseline; // placeholder - real trim would be via alignment
 $uppercase: uppercase;
 
-// Variables
-$shadow-color: rgba(40, 38, 44, 0.36); // #28262C at 36%
-$shadow-x: 0px;
-$shadow-y: 0px;
-$shadow-blur: 4px;
-$shadow-spread: 1px;
-
 // Mixin
 @mixin text-style($weight, $size, $spacing, $paragraph, $transform: none) {
   font-family: $font-roboto;
@@ -77,9 +70,4 @@ $shadow-spread: 1px;
 
 .dialog-text {
   @include text-style(300, 20px, $letter-spacing, 12px);
-}
-
-// Mixin for reusable shadow
-@mixin drop-shadow {
-  box-shadow: $shadow-x $shadow-y $shadow-blur $shadow-spread $shadow-color;
 }

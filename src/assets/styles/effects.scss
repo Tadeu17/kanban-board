@@ -1,0 +1,10 @@
+// Variables
+$shadow-color: rgba(40, 38, 44, 0.36); // #28262C at 36%
+$shadow-x: 0px;
+$shadow-y: 0px;
+$shadow-blur: 4px;
+$shadow-spread: 1px;
+
+@mixin drop-shadow {
+  box-shadow: $shadow-x $shadow-y $shadow-blur $shadow-spread $shadow-color;
+}
