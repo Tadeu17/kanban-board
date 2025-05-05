@@ -1,10 +1,17 @@
 <template>
   <div class="tasks-container">
-    <!-- TO DO Column -->
-    <div class="tasks-column" @dragover.prevent @drop="onDrop('to-do')">
-      <h2 class="heading-2">TO DO</h2>
+    <!-- Columns -->
+    <div
+      v-for="column in columns"
+      :key="column.status"
+      class="tasks-column"
+      @dragover.prevent
+      @drop="onDrop(column.status)"
+      :class="column.status"
+    >
+      <h2 class="heading-2">{{ column.label }}</h2>
       <TheTask
-        v-for="task in todoTasks"
+        v-for="task in filteredTasks(column.status)"
         :key="task.id"
         :task="task"
         draggable="true"
@@ -12,28 +19,13 @@
       />
     </div>
 
-    <!-- IN PROGRESS Column -->
-    <div class="tasks-column" @dragover.prevent @drop="onDrop('in-progress')">
-      <h2 class="heading-2">IN PROGRESS</h2>
-      <TheTask
-        v-for="task in inProgressTasks"
-        :key="task.id"
-        :task="task"
-        draggable="true"
-        @dragstart="onDragStart(task)"
-      />
-    </div>
-
-    <!-- DONE Column -->
-    <div class="tasks-column" @dragover.prevent @drop="onDrop('done')">
-      <h2 class="heading-2">DONE</h2>
-      <TheTask
-        v-for="task in doneTasks"
-        :key="task.id"
-        :task="task"
-        draggable="true"
-        @dragstart="onDragStart(task)"
-      />
+    <!-- Modal Dialog -->
+    <div v-if="showDialog" class="dialog-overlay" @click.self="closeDialog">
+      <div class="dialog-box">
+        <button class="close-btn" @click="closeDialog">Close</button>
+        <h3>Tasks in "{{ activeColumnLabel }}"</h3>
+        <pre>{{ formattedJson }}</pre>
+      </div>
     </div>
   </div>
 </template>
@@ -47,55 +39,60 @@ export default {
   data() {
     return {
       tasks: [],
-      draggedTask: null,
+      draggedTaskId: null,
+      showDialog: false,
+      dialogTasks: [],
+      activeColumnLabel: "",
+      columns: [
+        { label: "TO DO", status: "to-do" },
+        { label: "IN PROGRESS", status: "in-progress" },
+        { label: "DONE", status: "done" },
+      ],
     };
   },
   computed: {
-    todoTasks() {
-      return this.tasks.filter((task) => task.status === "to-do");
-    },
-    inProgressTasks() {
-      return this.tasks.filter((task) => task.status === "in-progress");
-    },
-    doneTasks() {
-      return this.tasks.filter((task) => task.status === "done");
+    formattedJson() {
+      return JSON.stringify(this.dialogTasks, null, 2);
     },
   },
   mounted() {
     fetch("https://q1z3telex7a9metry.denaliops.com/data.json")
-      .then((response) => {
-        if (!response.ok) throw new Error("Network response was not ok");
-        return response.json();
-      })
+      .then((res) => res.json())
       .then((data) => {
         this.tasks = data;
       })
-      .catch((error) => {
-        console.error("Fetch error:", error);
-      });
+      .catch((err) => console.error("Fetch error:", err));
   },
   methods: {
     onDragStart(task) {
-      this.draggedTask = task;
+      this.draggedTaskId = task.id;
     },
     onDrop(newStatus) {
-      if (this.draggedTask && this.draggedTask.status !== newStatus) {
-        const taskIndex = this.tasks.findIndex(
-          (t) => t.id === this.draggedTask.id
-        );
-        if (taskIndex !== -1) {
-          const [task] = this.tasks.splice(taskIndex, 1);
-          task.status = newStatus;
-          this.tasks.unshift(task); // 👈 Insert at the top of the array
-        }
-        this.draggedTask = null;
+      const task = this.tasks.find((t) => t.id === this.draggedTaskId);
+      if (task) {
+        task.status = newStatus;
+
+        const column = this.columns.find((c) => c.status === newStatus);
+        this.dialogTasks = this.tasks.filter((t) => t.status === newStatus);
+        this.activeColumnLabel = column ? column.label : newStatus;
+        this.showDialog = true;
       }
+
+      this.draggedTaskId = null;
+    },
+    filteredTasks(status) {
+      return this.tasks.filter((task) => task.status === status);
+    },
+    closeDialog() {
+      this.showDialog = false;
     },
   },
 };
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/styles/colors.scss";
+
 .heading-2 {
   text-align: left;
   font-weight: bold;
@@ -122,10 +119,60 @@ export default {
   flex-direction: column;
   gap: 16px;
   flex: 1;
-  border: 4px solid black;
+  border: 4px solid $black;
   border-radius: 4px;
   padding: 16px;
-  background-color: #f9f9f9;
   min-height: 300px;
+}
+
+/* Dialog styles */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.dialog-box {
+  background: $white;
+  padding: 24px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow: auto;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.2);
+  position: relative;
+}
+
+.dialog-box h3 {
+  margin-top: 0;
+}
+
+.dialog-box pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background: $pastel-mint;
+  padding: 12px;
+  border-radius: 4px;
+  margin-top: 12px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: $lapis;
+  color: $white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  cursor: pointer;
 }
 </style>
