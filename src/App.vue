@@ -1,13 +1,29 @@
 <template>
-  <TheNavigation />
+  <TheNavigation
+    class="navigation"
+    :class="isOpen ? 'open' : 'closed'"
+    :is-open="isOpen"
+    @toggleSidebar="isOpen = !isOpen"
+  />
 
-  <div>
-    <TheIcon name="Menu-Lapis" dark />
-  </div>
+  <section class="main-content" :class="isOpen ? 'open' : 'closed'">
+    <Router-View />
+  </section>
 </template>
 
-<script setup>  
-import TheNavigation from './components/TheNavigation.vue';
+<script>
+import TheNavigation from "./components/TheNavigation.vue";
+export default {
+  name: "App",
+  components: {
+    TheNavigation,
+  },
+  data() {
+    return {
+      isOpen: false,
+    };
+  },
+};
 </script>
 
 <style lang="scss">
@@ -19,16 +35,29 @@ import TheNavigation from './components/TheNavigation.vue';
   color: #2c3e50;
 }
 
-nav {
-  padding: 30px;
+$navigation-width-closed: 72px;
+$navigation-width-open: 240px;
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+.navigation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: $navigation-width-closed;
+  height: 100%;
+  background-color: #333;
+  transition: transform 0.3s ease;
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  &.open {
+    width: 240px;
+  }
+}
+
+.main-content {
+  margin-left: $navigation-width-closed;
+  transition: margin-left 0.3s ease;
+
+  &.open {
+    margin-left: $navigation-width-open;
   }
 }
 </style>

@@ -1,4 +1,4 @@
-@import './colors.scss';
+@import "./colors.scss";
 
 .my-nav {
   @media (orientation: portrait) {
@@ -10,8 +10,24 @@
   }
 }
 
+body {
+  margin: 0;
+}
+
+.w-100 {
+  width: 100%;
+}
+
+.text-white {
+  color: white;
+}
+
+.text-lapis {
+  color: $lapis;
+}
+
 // Variables
-$font-roboto: 'Roboto', sans-serif;
+$font-roboto: "Roboto", sans-serif;
 $letter-spacing: 1%;
 $line-height: 140%;
 $vertical-trim: baseline; // placeholder - real trim would be via alignment

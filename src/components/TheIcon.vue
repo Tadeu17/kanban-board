@@ -54,12 +54,11 @@ export default {
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  background-color: #f0f0f0;
-  size: 64px;
+  size: 48px;
 }
 
 .icon-container img {
-  max-width: 64px;
-  max-height: 64px;
+  max-width: 48px;
+  max-height: 48px;
 }
 </style>

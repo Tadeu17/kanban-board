@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
 
 const routes = [
-  // {
-  //   path: "/",
-  //   name: "home",
-  //   component: HomeView,
-  // },
+  {
+    path: "/",
+    name: "home",
+    redirect: "/tasks",
+  },
   {
     path: "/tasks",
     name: "tasks",
